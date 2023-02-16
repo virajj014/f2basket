@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "756537446828",
+    "project_id": "f2basket-e9b63",
+    "storage_bucket": "f2basket-e9b63.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:756537446828:android:829f41e9640e0149aa2a09",
+        "android_client_info": {
+          "package_name": "com.f2basket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "756537446828-qkjdlgm2r3idqj3u7nrpqo9j45ha2vru.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuLblfIMvBau-HlaLEpZ6CCMFoUGbL9w4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "756537446828-qkjdlgm2r3idqj3u7nrpqo9j45ha2vru.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
