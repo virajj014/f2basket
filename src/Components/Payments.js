@@ -4,11 +4,12 @@ import cod from '../assets/payments/cod.png'
 import paytm from '../assets/payments/paytm.png'
 import firestore from '@react-native-firebase/firestore';
 import { TouchableOpacity } from 'react-native';
+import emailjs from 'emailjs-com';
 
 const Payments = ({ route, navigation }) => {
     const { orderdata } = route.params;
     const [loading, setLoading] = React.useState(false);
-    console.log(orderdata);
+    // console.log(orderdata);
 
     const placenow = (paymenttype) => {
         // console.log(paymenttype);
@@ -20,12 +21,13 @@ const Payments = ({ route, navigation }) => {
         if (paymenttype == 'COD') {
             paymentstatus = 'pending';
         }
-        else if (paymenttype == 'PAYTM'){
+        else if (paymenttype == 'PAYTM') {
             paymentstatus = 'paid';
         }
         setLoading(true);
         // console.log(paymentstatus);
-        const docRef = firestore().collection('Orders').doc(new Date().getTime().toString());
+        const time = new Date().getTime().toString();
+        const docRef = firestore().collection('Orders').doc(time);
         docRef.set({
             orderdata: orderdata.orderdata,
             ordercost: orderdata.ordercost,
@@ -39,10 +41,12 @@ const Payments = ({ route, navigation }) => {
             paymentstatus: paymentstatus,
             paymenttotal: orderdata.paymenttotal,
         })
-            .then(() => {
-                setLoading(false);
+            .then((res) => {
+                // setLoading(false);
+                console.log('res =>', time);
                 alert('Order Placed Successfully');
-                navigation.navigate('OrderPlaced');
+                sendemailtoadmin(time);
+                // navigation.navigate('OrderPlaced');
             })
             .catch((error) => {
                 setLoading(false);
@@ -50,17 +54,33 @@ const Payments = ({ route, navigation }) => {
             });
     }
 
+    const sendemailtoadmin = (orderid) => {
+        const SERVICE_ID = 'service_q1s2cwd';
+        const TEMPLATE_ID = 'template_rmehsjr';
+        const YOUR_Public_KEY = 'nbhRFKmn8JWKYSNkH';
+        const adminpanellink = 'https://f2admin.vercel.app/orderdetails/'+orderid;
+        const message = {
+            to_name: 'Admin F2Basket',
+            order_id: orderid,
+            message_html: 'Please check your admin panel for new order. <br> <a href="' + adminpanellink + '">Click Here</a> to go to admin panel.',
+        };
 
-    // const placenow = (paymenttype) => {
-    //     console.log(paymenttype);
-    // }
+        // Send the email
+        emailjs.send(SERVICE_ID, TEMPLATE_ID, message, YOUR_Public_KEY).then((response) => {
+            console.log('Email sent successfully:', response);
+            navigation.navigate('OrderPlaced');
+        }).catch((error) => {
+            console.error('Error sending email:', error);
+        });
+    }
+
+
     return (
         <View>
             <Text style={styles.t1}>Select A Payment Method</Text>
             <View style={styles.v1}>
 
-                <TouchableOpacity onPress={() => 
-                {alert('Paytm Payment Gateway is not available right now.')}}>
+                <TouchableOpacity onPress={() => { alert('Paytm Payment Gateway is not available right now.') }}>
                     <View style={styles.v11}>
                         <Image source={paytm} style={styles.img1} />
                         <Text style={styles.t2}>Paytm</Text>
@@ -78,7 +98,7 @@ const Payments = ({ route, navigation }) => {
             <Text style={styles.cancel}
                 onPress={
                     () => {
-                       loading ? alert('Please Wait...') : navigation.navigate('Cart');
+                        loading ? alert('Please Wait...') : navigation.navigate('Cart');
                     }
                 }
             >

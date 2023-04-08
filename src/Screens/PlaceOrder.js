@@ -21,7 +21,7 @@ const PlaceOrder = ({ navigation, route }) => {
     const [userdata, setuserdata] = useRecoilState(userDataState)
 
     useEffect(() => {
-        console.log(cartdata);
+        // console.log(cartdata);
     }, [cartdata])
 
     const getuserdata = async () => {
@@ -65,7 +65,7 @@ const PlaceOrder = ({ navigation, route }) => {
             paymenttotal: totalCost + DeliveryCharge + gst / 100 * totalCost,
         }
 
-        console.log(orderdata);
+        // console.log(orderdata);
         navigation.navigate('Payments', { orderdata: orderdata });
     }
 

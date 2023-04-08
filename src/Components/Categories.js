@@ -1,33 +1,36 @@
-import { StyleSheet, Text, View, ScrollView ,TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View, ScrollView ,TouchableOpacity, Image} from 'react-native'
 import React from 'react'
 import { colors } from '../globals/style'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { col1, col2 } from '../styles/colors';
+import fruit from '../../src/assets/fruit.png';
+import plant from '../../src/assets/plant.png';
+import flower from '../../src/assets/flower.png';
 
 const Categories = ({navigation}) => {
     return (
         <View style={styles.container}>
           
-                <TouchableOpacity style={styles.box1}
+          <TouchableOpacity style={styles.box1}
                     onPress={() => navigation.navigate('Category', { category: 'fruit' })}
                 >
-                    <MaterialCommunityIcons name="fruit-watermelon" size={24} color="black" style={styles.myicon} />
+                    <Image source={fruit} style={{ width:60,height:60,borderRadius:30 }} />
                     <Text style={styles.mytext}>Fruits</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.box1}
                     onPress={() => navigation.navigate('Category', { category: 'plant' })}
                 >
-                    <MaterialCommunityIcons name="leaf" size={24} color="black" style={styles.myicon} />
+                    <Image source={plant} style={{width:60,height:60,borderRadius:30}} />
                     <Text style={styles.mytext}>Plants</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.box1}
                     onPress={() => navigation.navigate('Category', { category: 'flower' })}
                 >
-                    <MaterialIcons name="local-florist" size={24} color="black" style={styles.myicon} />
+                    <Image source={flower} style={{width:60,height:60,borderRadius:30}} />
                     <Text style={styles.mytext}>Flowers</Text>
                 </TouchableOpacity>
         </View>

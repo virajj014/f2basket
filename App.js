@@ -43,7 +43,6 @@ const App = () => {
           }}
         >
           <Stack.Screen name="Welcome" component={Welcome} 
-          //  pass props to welcome screen
           initialParams={{callchecklogin:true}}
           />
           <Stack.Screen name="Login" component={Login} />
@@ -59,7 +58,7 @@ const App = () => {
            }}
           />
 
-          {/* Inside App */}
+     
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="productpage" component={Productpage} />
           <Stack.Screen name="WholeSaleProductPage" component={WholeSaleProductPage} />
