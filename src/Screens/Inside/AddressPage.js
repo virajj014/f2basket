@@ -8,8 +8,8 @@ import { useRecoilState } from 'recoil'
 import { userDataState } from '../../Providers/userDataProvider'
 
 const AddressPage = ({ }) => {
-    const [loading , setLoading] = useState(false)
-    const [userdata , setuserdata] = useRecoilState(userDataState)
+    const [loading, setLoading] = useState(false)
+    const [userdata, setuserdata] = useRecoilState(userDataState)
     const [newaddress, setnewaddress] = React.useState({
         addressline1: '',
         addressline2: '',
@@ -60,6 +60,7 @@ const AddressPage = ({ }) => {
                     <TextInput
                         style={styles.forminput}
                         placeholder="Address Line 1"
+                        placeholderTextColor={'grey'}
                         value={newaddress.addressline1}
                         onChange={(e) => {
                             setnewaddress({
@@ -78,6 +79,7 @@ const AddressPage = ({ }) => {
                         style={styles.forminput}
                         placeholder="Address Line 2"
                         value={newaddress.addressline2}
+                        placeholderTextColor={'grey'}
                         onChange={(e) => {
                             setnewaddress({
                                 ...newaddress,
@@ -96,6 +98,7 @@ const AddressPage = ({ }) => {
                         style={styles.forminput}
                         placeholder="Address Line 3"
                         value={newaddress.addressline3}
+                        placeholderTextColor={'grey'}
                         onChange={(e) => {
                             setnewaddress({
                                 ...newaddress,
@@ -112,6 +115,7 @@ const AddressPage = ({ }) => {
                     <TextInput
                         style={styles.forminput}
                         placeholder="Pincode"
+                        placeholderTextColor={'grey'}
                         value={newaddress.pincode}
                         onChange={(e) => {
                             setnewaddress({
@@ -126,11 +130,11 @@ const AddressPage = ({ }) => {
                 <View
                     style={styles.formcont}
                 >
-                   {
-                          loading ? 
-                          <ActivityIndicator size="large" color={col1} />
-                          : <Text style={styles.formbutton} onPress={saveaddress}>Save</Text>
-                   }
+                    {
+                        loading ?
+                            <ActivityIndicator size="large" color={col1} />
+                            : <Text style={styles.formbutton} onPress={saveaddress}>Save</Text>
+                    }
                 </View>
             </ScrollView>
         </View>
@@ -166,6 +170,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         fontSize: 15,
         paddingVertical: 10,
+        color: 'black',
     },
     formbutton: {
         width: '100%',
