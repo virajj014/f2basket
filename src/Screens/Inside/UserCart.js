@@ -124,7 +124,9 @@ const UserCart = ({ navigation }) => {
                             {
                                 cartdata.map((item, index) => {
                                     return (
-                                        <Card2 key={index} data={JSON.parse(item)} quantity={JSON.parse(item).productquantity} deleteItem={() => deleteItem(item)} />
+                                        <Card2 key={index} data={JSON.parse(item)} quantity={JSON.parse(item).productquantity} deleteItem={() => deleteItem(item)} 
+                                        navigation={navigation}
+                                        />
 
 
                                     )
@@ -132,8 +134,8 @@ const UserCart = ({ navigation }) => {
                             }
 
                             <View style={styles.totalcont}>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#5A5A5A' }}>Total Cost: </Text>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#5A5A5A' }}>Rs. {totalCost}</Text>
+                                <Text style={{ fontSize: 16, fontWeight: '400', color: '#5A5A5A' }}>Total Cost: </Text>
+                                <Text style={{ fontSize: 17, fontWeight: '400', color: '#5A5A5A' }}>Rs. {totalCost}</Text>
                             </View>
                         </View>
                     }
@@ -183,10 +185,10 @@ const styles = StyleSheet.create({
         // height: '100%',
     },
     head1: {
-        fontSize: 40,
+        fontSize: 25,
         textAlign: 'center',
         // fontWeight: '200',
-        // marginVertical: 20,
+        marginVertical: 20,
         color: col1,
     },
     head2: {
@@ -214,8 +216,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cartimg: {
-        width: 150,
-        height: 100,
+        width: 100,
+        height: 50,
         borderRadius: 10,
     },
     cartcardin: {
@@ -283,9 +285,10 @@ const styles = StyleSheet.create({
     totalcont: {
         flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center', marginVertical: 10,
         backgroundColor: 'white',
-        elevation: 10,
-        borderRadius: 10,
-        padding: 10,
+        elevation: 3,
+        borderRadius: 5,
+        padding: 5,
+        paddingHorizontal: 20,
     },
     c4: {
         flexDirection: 'row',

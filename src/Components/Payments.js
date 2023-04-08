@@ -42,7 +42,7 @@ const Payments = ({ route, navigation }) => {
             .then(() => {
                 setLoading(false);
                 alert('Order Placed Successfully');
-                navigation.navigate('trackorders');
+                navigation.navigate('OrderPlaced');
             })
             .catch((error) => {
                 setLoading(false);
@@ -78,7 +78,7 @@ const Payments = ({ route, navigation }) => {
             <Text style={styles.cancel}
                 onPress={
                     () => {
-                        navigation.goBack();
+                       loading ? alert('Please Wait...') : navigation.navigate('Cart');
                     }
                 }
             >

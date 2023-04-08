@@ -10,6 +10,7 @@ import { col1 } from '../../styles/colors'
 import logo from '../../assets/logoFull.png'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { TouchableOpacity } from 'react-native'
+import { userDataState } from '../../Providers/userDataProvider'
 const Sidebar = ({ navigation }) => {
     const [sidebar, setsidebar] = useRecoilState(sidebarState);
 
@@ -19,11 +20,11 @@ const Sidebar = ({ navigation }) => {
     }
 
 
-    const [userdata, setUserdata] = useState(null);
+    const [userdata , setuserdata] = useRecoilState(userDataState)
     const getuserdata = async () => {
         const user = await AsyncStorage.getItem('loggeduser');
         if (user) {
-            setUserdata(JSON.parse(user).user);
+            setuserdata(JSON.parse(user).user);
             // console.log(JSON.parse(user).user);
             // {"user":{"name":"Harshal Jain","password":"hj123456","phone":"7000896210","address":"B-2, Sahib Parisar, Yadav Colony, Jabalpur","pincode":"482002"}}
         }
@@ -59,7 +60,19 @@ const Sidebar = ({ navigation }) => {
                 <Image source={logo} style={styles.logo} />
                 <Text style={styles.txt1}>{userdata?.name}</Text>
                 <Text style={styles.txt2}>{userdata?.phone}</Text>
-                <Text style={styles.txt3}>{userdata?.address}</Text>
+                <Text style={styles.txt3}>{
+                userdata?.address?.addressline1? userdata?.address?.addressline1 : null
+                } , 
+                {
+                    userdata?.address?.addressline2 ? userdata?.address?.addressline2 : null
+                } ,
+                {
+                    userdata?.address?.addressline3 ? userdata?.address?.addressline3 : null
+                } ,
+                {
+                    userdata?.address?.pincode ? userdata?.address?.pincode : null
+                }
+                </Text>
             </View>
 
             <TouchableOpacity style={styles.c1}

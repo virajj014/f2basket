@@ -19,7 +19,6 @@ const EditProfile = ({ navigation }) => {
     // console.log(userobj)
     setName(userobj.name)
     setPhone(userobj.phone)
-    setAddress(userobj.address)
   }
 
   useEffect(() => {
@@ -78,15 +77,7 @@ const EditProfile = ({ navigation }) => {
           />
         </View>
 
-        <View style={styles.formcont}>
-          <Text style={styles.formlabel}>Address</Text>
-          <TextInput style={styles.forminput}
-            value={address}
-            onChangeText={(text) => setAddress(text)}
-            multiline={true}
-          />
-        </View>
-
+  
         <TouchableOpacity onPress={() => handleSave()}>
           <View style={styles.settingbtn}>
             <Text style={styles.settingbtntext}>Update</Text>

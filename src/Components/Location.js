@@ -8,13 +8,18 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation } from '@react-navigation/native'
+import { useRecoilState } from 'recoil'
+import { userDataState } from '../Providers/userDataProvider'
 const Location = () => {
     const [address, setAddress] = React.useState('')
+    const [userdata , setuserdata] = useRecoilState(userDataState)
+    const navigation = useNavigation()
 
     const getOldAddress = async () => {
         const user = await AsyncStorage.getItem('loggeduser')
         const userobj = JSON.parse(user).user
-        setAddress(userobj.address)
+        setuserdata(userobj)
     }
 
     useEffect(() => {
@@ -25,9 +30,13 @@ const Location = () => {
             <View style={styles.c3}>
                 <View style={styles.c2}>
                     <MaterialIcons name="location-on" size={20} color="#fff" style={styles.icon} />
-                    <Text style={styles.t1}>{address}</Text>
+                    <Text style={styles.t1}>{userdata?.address?.addressline1}..{userdata?.address?.pincode}</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={20} color="#fff" style={styles.icon1} />
+                <Ionicons name="chevron-forward" size={20} color="#fff" style={styles.icon1}
+                 onPress={() => {
+                    navigation.navigate('addresspage')
+                 }}
+                />
             </View>
         </View>
     )

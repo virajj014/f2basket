@@ -24,6 +24,9 @@ import EditProfile from './src/Screens/Inside/EditProfile';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Payments from './src/Components/Payments';
+import AddressPage from './src/Screens/Inside/AddressPage';
+import WholeSaleProductPage from './src/Screens/Inside/WholeSaleProductPage';
+import OrderPlaced from './src/Components/OrderPlaced';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -49,10 +52,17 @@ const App = () => {
           <Stack.Screen name="ForgotPassword1" component={ForgotPassword1} />
           <Stack.Screen name="ForgotPassword2" component={ForgotPassword2} />
           <Stack.Screen name="ForgotPassword3" component={ForgotPassword3} />
+          <Stack.Screen name="addresspage" component={AddressPage}
+           options={{
+            headerShown: true,
+            headerTitle: 'Address',
+           }}
+          />
 
           {/* Inside App */}
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="productpage" component={Productpage} />
+          <Stack.Screen name="WholeSaleProductPage" component={WholeSaleProductPage} />
           <Stack.Screen name="cart" component={UserCart} />
           <Stack.Screen name="placeorder" component={PlaceOrder} />
           <Stack.Screen name="trackorders" component={TrackOrders} />
@@ -61,6 +71,7 @@ const App = () => {
           <Stack.Screen name="editprofile" component={EditProfile} />
           {/* payments */}
           <Stack.Screen name="Payments" component={Payments} />
+          <Stack.Screen name="OrderPlaced" component={OrderPlaced} />
         </Stack.Navigator>
       </NavigationContainer>
       </RecoilRoot>

@@ -18,7 +18,9 @@ const TrackOrders = ({ navigation }) => {
         // console.log(userdata.user)
         const ordersRef = firestore().collection('Orders').where('orderphone', '==', userdata.user.phone);
         ordersRef.onSnapshot(snapshot => {
-          setOrders(snapshot.docs.map(doc => doc.data()))
+          setOrders(snapshot.docs.map(doc => {
+            return { ...doc.data(), id: doc.id }
+          }))
         })
       })
 
@@ -42,7 +44,9 @@ const TrackOrders = ({ navigation }) => {
 
 
   const cancelOrder = (orderitem) => {
-    const orderRef = firestore().collection('Orders').doc(orderitem.orderid);
+    // console.log(orderitem)
+    const orderRef = firestore().collection('Orders').doc(orderitem.id);
+    // console.log(orderRef)
     orderRef.update({
       orderstatus: 'cancelled'
     })
@@ -98,8 +102,16 @@ const TrackOrders = ({ navigation }) => {
                               <Text style={styles.qty}>{JSON.parse(item).productquantity}</Text>
                               <Text style={styles.title}>{JSON.parse(item).data.productName}</Text>
                               <Text style={styles.price1}>₹{JSON.parse(item).data.productPrice}</Text>
+
                             </View>
+
                             <View style={styles.right}>
+                              {
+                                JSON.parse(item).wholesale &&
+                                <Text
+                                  style={styles.wholesale}
+                                >Wholesale</Text>
+                              }
                               <Text style={styles.totalprice}>₹{parseInt(JSON.parse(item).productquantity) * parseInt(JSON.parse(item).data.productPrice)}</Text>
                             </View>
                           </View>
@@ -113,9 +125,9 @@ const TrackOrders = ({ navigation }) => {
                 {
                   order.orderstatus === 'Delivered' ? <Text style={styles.ordertxt3}>Thank you for ordering with us</Text> : null
                 }
-                {
+                {/* {
                   order.orderstatus === 'cancelled' ? <Text style={styles.ordertxt3}>Sorry for the inconvenience</Text> : null
-                }
+                } */}
                 {
                   order.orderstatus != 'cancelled' && order.orderstatus != 'delivered' ?
                     <TouchableOpacity style={styles.cancelbtn} onPress={() => cancelOrder(order)}>
@@ -127,6 +139,9 @@ const TrackOrders = ({ navigation }) => {
             )
           })}
         </View>
+        <View
+          style={{height: 100}}
+        ></View>
       </ScrollView>
     </View>
   )
@@ -157,7 +172,6 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     width: '100%',
     height: '100%',
-    marginBottom: 100,
   },
 
   head1: {
@@ -175,15 +189,13 @@ const styles = StyleSheet.create({
   rowout: {
     flexDirection: 'column',
     margin: 10,
-    elevation: 10,
     backgroundColor: '#fff',
-    padding: 10,
     borderRadius: 10,
   },
   row1: {
     flexDirection: 'column',
     margin: 10,
-    elevation: 10,
+    // elevation: 10,
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
@@ -194,20 +206,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#111111',
-    padding: 5,
+    padding: 2,
     borderRadius: 20,
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
     maxWidth: '80%',
     flexWrap: 'wrap',
+    gap: 10,
   },
   right: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
   },
+  wholesale: {  fontSize: 12,
+    color: '#fff',
+    backgroundColor: col1,
+    borderRadius: 5,
+    padding: 2,
+    paddingHorizontal: 15,
+    textAlign: 'center',},
   qty: {
     backgroundColor: col1,
     color: '#111111',
-    marginRight: 10,
+    // marginRight: 10,
     width: 30,
     textAlign: 'center',
     borderRadius: 30,
@@ -216,13 +237,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   title: {
-    fontSize: 15,
+    fontSize: 12,
     color: col1,
     marginRight: 10,
 
   },
   price1: {
-    fontSize: 15,
+    fontSize: 12,
     color: col1,
     marginRight: 10,
   },
@@ -243,28 +264,33 @@ const styles = StyleSheet.create({
   },
   order: {
     margin: 10,
-    elevation: 10,
+    elevation: 1,
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
 
   },
   ordertxt1: {
-    fontSize: 20,
+    fontSize: 13,
     color: col1,
     textAlign: 'center',
-    marginVertical: 10,
+    marginVertical: 5,
     color: '#5A5A5A'
 
   },
   ordertxt2: {
-    fontSize: 17,
-    color: col1,
+    fontSize: 13,
     textAlign: 'center',
     marginVertical: 5,
     fontWeight: 'bold',
     color: '#5A5A5A'
 
+  },
+  ordertxt3: {
+    fontSize: 13,
+    textAlign: 'center',
+    marginVertical: 5,
+    color: '#5A5A5A'
   },
   orderindex: {
     fontSize: 20,
@@ -272,32 +298,23 @@ const styles = StyleSheet.create({
     backgroundColor: col1,
     textAlign: 'center',
     borderRadius: 30,
-    padding: 5,
     width: 30,
+    height: 30,
     position: 'absolute',
     top: 10,
     left: 10,
   },
-  ordertxt3: {
-    fontSize: 17,
-    color: '#111111',
-    textAlign: 'center',
-    marginVertical: 5,
-    borderColor: col1,
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 5,
-  },
+
   cancelbtn: {
     backgroundColor: col1,
-    padding: 10,
+    padding: 5,
     borderRadius: 10,
     marginVertical: 10,
     alignSelf: 'center',
-
+    paddingHorizontal: 20,
   },
   cencelbtnin: {
-    fontSize: 20,
+    fontSize: 14,
     color: '#fff',
     textAlign: 'center',
     fontWeight: 'bold',
@@ -307,7 +324,7 @@ const styles = StyleSheet.create({
   },
   orderstatusin: {},
   orderotw: {
-    fontSize: 20,
+    fontSize: 12,
     backgroundColor: 'orange',
     color: 'white',
     textAlign: 'center',
@@ -318,7 +335,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   orderdelivered: {
-    fontSize: 20,
+    fontSize: 12,
     backgroundColor: 'green',
     color: 'white',
     textAlign: 'center',
@@ -329,7 +346,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   ordercancelled: {
-    fontSize: 20,
+    fontSize: 12,
     backgroundColor: 'red',
     color: 'white',
     textAlign: 'center',
@@ -340,7 +357,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   orderpending: {
-    fontSize: 20,
+    fontSize: 12,
     backgroundColor: 'yellow',
     color: 'grey',
     textAlign: 'center',

@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native'
+import { Alert, StyleSheet, Text, TouchableOpacity, View, TextInput, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navbtn, navbtnin, navbtnout } from '../styles/style';
@@ -8,6 +8,9 @@ import { col1 } from '../styles/colors';
 import { btn1 } from '../styles/auth';
 import firestore from '@react-native-firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { NavigationContainerRefContext } from '@react-navigation/native';
+import { useRecoilState } from 'recoil';
+import { userDataState } from '../Providers/userDataProvider';
 
 const PlaceOrder = ({ navigation, route }) => {
     const [orderdata, setOrderdata] = useState([]);
@@ -15,21 +18,16 @@ const PlaceOrder = ({ navigation, route }) => {
     const [DeliveryCharge, setDeliveryCharge] = useState(40);
     const [gst, setGst] = useState(5);
     const { cartdata } = route.params;
+    const [userdata, setuserdata] = useRecoilState(userDataState)
+
     useEffect(() => {
-        // setOrderdata(cartdata);
-        // console.log(JSON.parse(cartdata[0]).data);
         console.log(cartdata);
-        // cartdata.map((item) => {
-        //     console.log(JSON.parse(item).data.productName)
-        // })
     }, [cartdata])
 
-    // --------------------------
-    const [userdata, setUserdata] = useState(null);
     const getuserdata = async () => {
         const user = await AsyncStorage.getItem('loggeduser');
         if (user) {
-            setUserdata(JSON.parse(user));
+            setuserdata(JSON.parse(user).user);
             // console.log(user);
         }
         else {
@@ -51,8 +49,6 @@ const PlaceOrder = ({ navigation, route }) => {
         gettotalcost();
     }, []);
 
-
-
     const placenow = () => {
         const docRef = firestore().collection('Orders').doc(new Date().getTime().toString());
         const orderdata = {
@@ -61,9 +57,9 @@ const PlaceOrder = ({ navigation, route }) => {
             orderid: docRef.id,
             orderstatus: 'pending',
             orderdate: new Date().getTime().toString(),
-            orderaddress: userdata?.user.address,
-            orderphone: userdata?.user.phone,
-            ordername: userdata?.user.name,
+            orderaddress: userdata?.address,
+            orderphone: userdata?.phone,
+            ordername: userdata?.name,
             orderpayment: 'NOT_SELECTED',
             paymentstatus: 'pending',
             paymenttotal: totalCost + DeliveryCharge + gst / 100 * totalCost,
@@ -74,27 +70,6 @@ const PlaceOrder = ({ navigation, route }) => {
     }
 
 
-    const [editaddress, setEditaddress] = useState(false);
-    const [newaddress, setNewaddress] = useState('');
-    const saveaddress = async () => {
-
-        const usersCollection = firestore().collection('users')
-        const user = await AsyncStorage.getItem('loggeduser')
-
-        const userobj = await JSON.parse(user).user
-
-        const userdoc = await usersCollection.doc(userobj.phone).update({
-            address: newaddress,
-        })
-
-
-        const userdoc1 = await usersCollection.doc(userobj.phone).get()
-        // console.log(userdoc1.data())
-        AsyncStorage.setItem('loggeduser', JSON.stringify({ user: userdoc1.data() }))
-        alert('Address Updated')
-        setEditaddress(false)
-        getuserdata()
-    }
     return (
         <View style={styles.fullbg}>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={navbtnout}>
@@ -113,7 +88,13 @@ const PlaceOrder = ({ navigation, route }) => {
                                         <View style={styles.left}>
                                             <Text style={styles.qty}>{JSON.parse(item).productquantity}</Text>
                                             <Text style={styles.title}>{JSON.parse(item).data.productName}</Text>
-                                            <Text style={styles.price1}>₹{JSON.parse(item).data.productPrice}</Text>
+                                            <Text style={styles.price1}>₹{JSON.parse(item).data.productPrice} / {JSON.parse(item).data.productpriceunit}</Text>
+                                            {
+                                                JSON.parse(item).wholesale &&
+                                                <Text
+                                                    style={styles.wholesale}
+                                                >Wholesale</Text>
+                                            }
                                         </View>
                                         <View style={styles.right}>
                                             <Text style={styles.totalprice}>₹{parseInt(JSON.parse(item).productquantity) * parseInt(JSON.parse(item).data.productPrice)}</Text>
@@ -132,7 +113,7 @@ const PlaceOrder = ({ navigation, route }) => {
                                 <Text style={styles.title}>Name :</Text>
                             </View>
                             <View style={styles.right}>
-                                <Text style={styles.title}>{userdata?.user.name}</Text>
+                                <Text style={styles.title}>{userdata?.name}</Text>
                             </View>
                         </View>
 
@@ -142,7 +123,7 @@ const PlaceOrder = ({ navigation, route }) => {
                             </View>
 
                             <View style={styles.right}>
-                                <Text style={styles.title}>{userdata?.user.phone}</Text>
+                                <Text style={styles.title}>{userdata?.phone}</Text>
                             </View>
                         </View>
 
@@ -150,33 +131,22 @@ const PlaceOrder = ({ navigation, route }) => {
                             <View style={styles.left}>
                                 <Text style={styles.title}>Address :</Text>
                             </View>
-                            {
-                                editaddress ?
-                                    <View style={styles.right}>
-                                        <TextInput style={styles.address1} placeholder="Enter Address" value={newaddress}
-                                            onChangeText={(text) => setNewaddress(text)}
-                                        />
-                                        <TouchableOpacity onPress={() => {
-                                            saveaddress();
-                                        }
-                                        }
 
-                                        >
-                                            <Ionicons name="chevron-forward" size={24} color="black" style={styles.save} />
-                                        </TouchableOpacity>
-                                    </View>
-                                    :
-                                    <View style={styles.right}>
-                                        <AntDesign name="edit" size={24} color="black" style={styles.qty}
-                                            onPress={() => {
-                                                setEditaddress(true)
-                                                setNewaddress(userdata?.user.address)
-                                            }}
-                                        />
-                                        <Text style={styles.address}>{userdata?.user.address}</Text>
-                                        {/* editicon */}
-                                    </View>
-                            }
+                            <View style={styles.right}>
+                                <AntDesign name="edit" size={24} color="black" style={styles.qty}
+                                    onPress={() => {
+                                        navigation.navigate('addresspage')
+                                    }}
+                                />
+                                <Text style={styles.address}>
+                                    {userdata?.address?.addressline1} ,
+                                    {userdata?.address?.addressline2} ,
+                                    {userdata?.address?.addressline3} ,
+                                    {userdata?.address?.pincode}
+                                </Text>
+                                {/* editicon */}
+                            </View>
+
                         </View>
                     </View>
                     <View
@@ -206,7 +176,7 @@ const PlaceOrder = ({ navigation, route }) => {
 
                     <View >
                         <TouchableOpacity style={styles.btn1}>
-                            <Text style={styles.btntext} onPress={() => placenow()}>Proceed to Payment</Text>
+                            <Text style={styles.btntext} onPress={() => placenow()}>Proceed For Payment</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -221,11 +191,13 @@ export default PlaceOrder
 const styles = StyleSheet.create({
     fullbg: {
         backgroundColor: 'white',
+        flex: 1,
     },
     container: {
         flexDirection: 'column',
-        alignItems: 'center',
+        // alignItems: 'center',
         marginTop: 100,
+        paddingHorizontal: 20,
     },
     head1: {
         fontSize: 30,
@@ -234,44 +206,57 @@ const styles = StyleSheet.create({
         margin: 10,
         textAlign: 'center'
     },
+    wholesale: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: col1,
+        margin: 10,
+        textAlign: 'center',
+        borderColor: col1,
+        borderWidth: 1,
+        borderRadius: 5,
+        padding: 2,
+    },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 5,
         justifyContent: 'space-between',
         // width: '90%',
+
     },
     rowout: {
         flexDirection: 'column',
-        marginVertical: 10,
-        elevation: 10,
+        marginVertical: 5,
+        // elevation: 1,
         backgroundColor: 'white',
-        padding: 10,
+        // padding: 10,
         borderRadius: 10,
         width: '90%',
+        alignSelf: 'center',
     },
 
     qty: {
-        width: 40,
-        height: 30,
+        width: 25,
+        height: 25,
         backgroundColor: col1,
-        borderRadius: 10,
+        borderRadius: 20,
         textAlign: 'center',
         textAlignVertical: 'center',
         marginRight: 10,
         color: 'white',
-        fontSize: 17,
+        fontSize: 12,
         fontWeight: 'bold',
         color: '#5A5A5A'
     },
     title: {
-        fontSize: 15,
+        fontSize: 12,
         fontWeight: 'bold',
         marginRight: 10,
         color: '#5A5A5A'
     },
     price1: {
-        fontSize: 17,
+        fontSize: 12,
         fontWeight: 'bold',
         marginRight: 10,
         color: col1,
@@ -284,50 +269,61 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         maxWidth: '70%',
+        justifyContent: 'flex-end',
     },
     totalprice: {
-        fontSize: 15,
+        fontSize: 12,
         fontWeight: 'bold',
-        borderRadius: 10,
+        borderRadius: 20,
         padding: 5,
+        paddingHorizontal: 20,
         color: col1,
         backgroundColor: '#111111',
     },
     btntext: {
-        fontSize: 20,
+        fontSize: 12,
         fontWeight: 'bold',
         color: col1,
         margin: 10,
-        color: '#5A5A5A',
+        color: 'white',
+        textAlign: 'center',
     },
     boxout: {
         flexDirection: 'row',
         width: '90%',
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
     },
     boxtxt: {
         fontSize: 16,
-        width: '50%',
-        borderColor: col1,
-        borderWidth: 1,
+        width: '30%',
+        // borderColor: col1,
+        // borderWidth: 1,
         padding: 10,
-        textAlign: 'center',
+        // textAlign: 'left',
         color: '#5A5A5A',
     },
     btn1: {
         backgroundColor: col1,
-        borderRadius: 10,
+        borderRadius: 20,
         margin: 10,
+        paddingHorizontal: 20,
     },
     address: {
-        fontSize: 15,
-        maxWidth: '100%',
+        fontSize: 12,
         // backgroundColor: '#111111',
-        color: '#111111',
-        fontWeight: 'bold',
+        color: '#5A5A5A',
+        fontWeight: '500',
+        width: '70%',
+        alignSelf: 'center',
     },
     userdataout: {
         flexDirection: 'column',
         width: '90%',
+        alignSelf: 'center',
+
     },
     address1: {
         fontSize: 15,

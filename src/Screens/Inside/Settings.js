@@ -18,7 +18,9 @@ const Settings = ({ navigation }) => {
       })
   }
   return (
-    <View>
+    <View
+      style={styles.container}
+    >
       <TouchableOpacity onPress={() => navigation.navigate('Home')} style={navbtnout}>
         <View style={navbtn}>
           <AntDesign name="back" size={24} color="black" style={navbtnin} />
@@ -37,6 +39,15 @@ const Settings = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('editprofile')}>
           <View style={styles.settingitem}>
             <Text style={styles.settingitemtext}>Edit profile</Text>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color="black"
+              style={styles.settingitemicon}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('addresspage')}>
+          <View style={styles.settingitem}>
+            <Text style={styles.settingitemtext}>Edit Address</Text>
             <MaterialIcons name="keyboard-arrow-right" size={24} color="black"
               style={styles.settingitemicon}
             />
@@ -113,7 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginTop: 20,
     textAlign: 'center',
-
+    color: col1,
   },
   containerin: {
     marginHorizontal: 20,

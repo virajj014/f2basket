@@ -9,9 +9,9 @@ import firestore from '@react-native-firebase/firestore';
 import { Alert } from 'react-native/Libraries/Alert/Alert';
 import BottomNav from '../../Components/BottomNav';
 
-const Productpage = ({ navigation, route }) => {
-    const data = route.params;
-    const [quantity, setquantity] = useState('1');
+const WholeSaleProductPage = ({ navigation, route }) => {
+    let data = route.params;
+    const [quantity, setquantity] = useState(data.productwholesalequantity);
     const [addonquantity, setaddonquantity] = useState('0');
     const [loading, setloading] = useState(false);
     if (route.params === undefined) {
@@ -38,8 +38,17 @@ const Productpage = ({ navigation, route }) => {
         setquantity((parseInt(quantity) + 1).toString())
     }
     const decreaseQuantity = () => {
-        if (parseInt(quantity) > 1) {
+        if (parseInt(quantity) > data.productwholesalequantity) {
             setquantity((parseInt(quantity) - 1).toString())
+        }
+        else {
+            ToastAndroid.showWithGravityAndOffset(
+                "Minimum Quantity is " + data.productwholesalequantity,
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+                25,
+                50
+            )
         }
     }
 
@@ -48,6 +57,10 @@ const Productpage = ({ navigation, route }) => {
 
 
     const addTocart = () => {
+        data = {
+            ...data,
+            productPrice: data.productwholesaleprice,
+        }
         setloading(true)
         firestore()
             .collection('users')
@@ -56,7 +69,10 @@ const Productpage = ({ navigation, route }) => {
             .then((querySnapshot) => {
                 querySnapshot.forEach((documentSnapshot) => {
                     // const data1 = documentSnapshot.data();
-                    const cartdata = JSON.stringify({ Addonquantity: addonquantity, productquantity: quantity, data });
+                    const cartdata = JSON.stringify({
+                        Addonquantity: addonquantity, productquantity: quantity, data,
+                        wholesale: true
+                    });
                     firestore()
                         .collection('users')
                         .doc(documentSnapshot.id)
@@ -100,6 +116,23 @@ const Productpage = ({ navigation, route }) => {
                 </View>
             </TouchableOpacity>
 
+            <Text style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                backgroundColor: col1,
+                color: 'white',
+                padding: 5,
+                paddingHorizontal: 10,
+                zIndex: 1000,
+                margin: 10,
+                borderRadius: 20,
+                fontSize: 12,
+                fontWeight: 'bold',
+
+
+            }}>Wholesale Product</Text>
+
             <View
                 style={{ height: '90%', backgroundColor: 'white' }}
             >
@@ -111,7 +144,7 @@ const Productpage = ({ navigation, route }) => {
 
                     <View style={styles.c1}>
                         <Text style={styles.c1t1}>{data.productName}</Text>
-                        <Text style={styles.c1t2}>₹{data.productPrice} / {data.productpriceunit}</Text>
+                        <Text style={styles.c1t2}>₹{data.productwholesaleprice} / {data.productpriceunit}</Text>
 
                     </View>
 
@@ -131,7 +164,7 @@ const Productpage = ({ navigation, route }) => {
                             <Text style={styles.totaltext}>Total</Text>
                             <Text style={styles.totaltext}>-</Text>
 
-                            <Text style={styles.totaltext}>₹{data.productPrice * quantity}</Text>
+                            <Text style={styles.totaltext}>₹{data.productwholesaleprice * quantity}</Text>
 
                         </View>
                     </View>
@@ -171,7 +204,7 @@ const Productpage = ({ navigation, route }) => {
     )
 }
 
-export default Productpage
+export default WholeSaleProductPage
 
 const styles = StyleSheet.create({
     fullbg: {
@@ -290,7 +323,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         fontSize: 16,
         fontWeight: 'bold',
-        elevation: 5,
+        elevation: 1,
     },
     c3: {
         padding: 10,
@@ -311,3 +344,4 @@ const styles = StyleSheet.create({
     }
 
 })
+

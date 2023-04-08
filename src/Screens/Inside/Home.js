@@ -18,6 +18,7 @@ import style, { bottomnav } from '../../styles/style'
 import { TextInput } from 'react-native-gesture-handler'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Card1 from '../../Components/cards/Card1'
+import Offers from '../../Components/Offers'
 
 
 let screenheight = Dimensions.get('window').height;
@@ -87,6 +88,7 @@ const Home = ({ navigation }) => {
 
 
   const [swiperimages, setswiperimages] = useState([]);
+  const [offerimages, setofferimages] = useState([]);
   const getswiperimages = async () => {
     // collection name is 'sliderData'
     let temp = [];
@@ -99,8 +101,21 @@ const Home = ({ navigation }) => {
     })
   }
 
+  const getofferimages = async () => {
+    // collection name is 'offerData'
+    let temp = [];
+
+    const offerRef = firestore().collection('offerimages')
+    offerRef.onSnapshot(snapshot => {
+      temp = snapshot.docs.map(doc => doc.data())
+      // console.log(temp)
+      setofferimages(temp)
+    })
+  }
+
   useEffect(() => {
     getswiperimages()
+    getofferimages()
   }, [])
   // GETTING DATA FROM FIREBASE
   const [productData, setproductData] = useState([]);
@@ -108,9 +123,12 @@ const Home = ({ navigation }) => {
   const [Catergory2, setCatergory2] = useState([]);
   const [Catergory3, setCatergory3] = useState([]);
   const productRef = firestore().collection('productData')
+  const [loading, setloading] = useState(false)
   useEffect(() => {
+    setloading(true)
     productRef.onSnapshot(snapshot => {
       setproductData(snapshot.docs.map(doc => doc.data()))
+      setloading(false)
       // console.log(snapshot.docs.map(doc => doc.data()))
     }
     )
@@ -150,19 +168,31 @@ const Home = ({ navigation }) => {
             <View style={styles.searchbar}>
               <TextInput placeholder="Search" style={styles.searchinput}
                 onChangeText={(text) => setsearchval(text)}
+                placeholderTextColor={col1}
               />
               {/* search icon */}
               <MaterialIcons name="search" size={30} style={styles.searchicon} />
             </View>
             {
-              searchval.length == 0 &&
+              searchval.length == 0 && loading == false &&
               <View style={styles.fullbg}>
                 <BigSwiper data={swiperimages} />
                 <Categories navigation={navigation} />
                 <Cardslider title={"Today's Special"} data={productData} navigation={navigation} />
+                <Offers 
+                  offers={offerimages}
+                  title={"Offers"}
+                />
                 <Cardslider title={"Fruits"} data={Catergory1} navigation={navigation} />
                 <Cardslider title={"Plants"} data={Catergory2} navigation={navigation} />
                 <Cardslider title={"Flowers"} data={Catergory3} navigation={navigation} />
+              </View>
+            }
+            {
+              loading == true &&
+              <View style={styles.fullbg}
+              >
+                <ActivityIndicator size="large" color="black" />
               </View>
             }
             {
@@ -235,12 +265,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 10,
     paddingHorizontal: 10,
-    elevation: 10,
+    elevation: 5,
   },
   searchinput: {
     width: '90%',
     color: 'grey',
     fontSize: 20,
+
   },
   searchicon: {
     backgroundColor: '#fff',
